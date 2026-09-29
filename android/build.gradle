@@ -28,7 +28,15 @@ project.getTasks().withType(JavaCompile).configureEach {
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+
+// AGP 9 compiles Kotlin itself ("built-in Kotlin"); applying KGP on top of it
+// fails the whole build, so apply it only where AGP still needs it.
+def agpMajor = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger()
+def builtInKotlinProp = project.findProperty('android.builtInKotlin')
+def builtInKotlin = agpMajor >= 9 && (builtInKotlinProp == null || builtInKotlinProp.toString().toBoolean())
+if (!builtInKotlin) {
+    project.pluginManager.apply('kotlin-android')
+}
 
 android {
     compileSdk 36
@@ -50,9 +58,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+}
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11
+// Top-level `kotlin` block: provided by KGP below AGP 9 and by AGP's built-in
+// Kotlin from 9 on, unlike `android.kotlinOptions`, which only KGP adds.
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
     }
 }
 dependencies {
