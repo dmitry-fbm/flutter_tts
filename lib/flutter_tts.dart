@@ -400,6 +400,14 @@ class FlutterTts {
   Future<dynamic> setSharedInstance(bool sharedSession) async =>
       await _channel.invokeMethod('setSharedInstance', sharedSession);
 
+  /// [Future] which sets `AVSpeechUtterance.preUtteranceDelay` (seconds) for
+  /// every following utterance. The silent lead-in covers the audio route
+  /// waking up after the shared session was deactivated, which otherwise
+  /// clips the first syllables. 0 (default) disables it.
+  /// ***iOS supported only***
+  Future<dynamic> setPreUtteranceDelay(double seconds) async =>
+      await _channel.invokeMethod('setPreUtteranceDelay', seconds);
+
   /// [Future] which invokes the platform specific method for setting the autoStopSharedSession
   /// default value is true
   /// *** iOS, and macOS supported only***

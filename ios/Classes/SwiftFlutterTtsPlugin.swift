@@ -15,6 +15,7 @@ public class SwiftFlutterTtsPlugin: NSObject, FlutterPlugin, AVSpeechSynthesizer
   var awaitSpeakCompletion: Bool = false
   var awaitSynthCompletion: Bool = false
   var autoStopSharedSession: Bool = true
+  var preUtteranceDelay: TimeInterval = 0
   var speakResult: FlutterResult? = nil
   var synthResult: FlutterResult? = nil
   
@@ -116,6 +117,11 @@ public class SwiftFlutterTtsPlugin: NSObject, FlutterPlugin, AVSpeechSynthesizer
       let sharedInstance = call.arguments as! Bool
       self.setSharedInstance(sharedInstance: sharedInstance, result: result)
       break
+    case "setPreUtteranceDelay":
+      let seconds: Double = call.arguments as! Double
+      self.preUtteranceDelay = max(0, seconds)
+      result(1)
+      break
     case "autoStopSharedSession":
       let autoStop = call.arguments as! Bool
       self.autoStopSharedSession = autoStop
@@ -157,6 +163,7 @@ public class SwiftFlutterTtsPlugin: NSObject, FlutterPlugin, AVSpeechSynthesizer
       utterance.rate = self.rate
       utterance.volume = self.volume
       utterance.pitchMultiplier = self.pitch
+      utterance.preUtteranceDelay = self.preUtteranceDelay
 
       self.synthesizer.speak(utterance)
       if self.awaitSpeakCompletion {
