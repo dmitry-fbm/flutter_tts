@@ -508,6 +508,14 @@ class FlutterTts {
     return engines;
   }
 
+  /// [Future] which invokes the platform specific method for getEnginesInfo
+  /// Returns a list of `{name, label}` maps, one per installed engine
+  /// ***Android supported only***
+  Future<dynamic> get getEnginesInfo async {
+    final engines = await _channel.invokeMethod('getEnginesInfo');
+    return engines;
+  }
+
   /// [Future] which invokes the platform specific method for getDefaultEngine
   /// Returns a `String` of the default engine name
   /// ***Android supported only ***

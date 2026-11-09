@@ -414,6 +414,7 @@ class FlutterTtsPlugin : MethodCallHandler, FlutterPlugin {
             "getVoices" -> getVoices(result)
             "getSpeechRateValidRange" -> getSpeechRateValidRange(result)
             "getEngines" -> getEngines(result)
+            "getEnginesInfo" -> getEnginesInfo(result)
             "getDefaultEngine" -> getDefaultEngine(result)
             "getDefaultVoice" -> getDefaultVoice(result)
             "setVoice" -> {
@@ -498,6 +499,9 @@ class FlutterTtsPlugin : MethodCallHandler, FlutterPlugin {
         ttsStatus = null
         selectedEngine = engine
         engineResult = result
+        // Release the current engine first: each TextToSpeech holds a bound
+        // service connection that otherwise leaks on every switch.
+        tts?.shutdown()
         tts = TextToSpeech(context, onInitListenerWithCallback, engine)
     }
 
@@ -597,6 +601,20 @@ class FlutterTtsPlugin : MethodCallHandler, FlutterPlugin {
             }
         } catch (e: Exception) {
             Log.d(tag, "getEngines: " + e.message)
+        }
+        result.success(engines)
+    }
+
+    // Installed engines with their user-facing labels, e.g.
+    // {name: "com.google.android.tts", label: "Speech Services by Google"}.
+    private fun getEnginesInfo(result: Result) {
+        val engines = ArrayList<HashMap<String, String>>()
+        try {
+            for (engineInfo in tts!!.engines) {
+                engines.add(hashMapOf("name" to engineInfo.name, "label" to (engineInfo.label ?: engineInfo.name)))
+            }
+        } catch (e: Exception) {
+            Log.d(tag, "getEnginesInfo: " + e.message)
         }
         result.success(engines)
     }
