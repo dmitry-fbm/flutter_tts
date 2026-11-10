@@ -433,6 +433,7 @@ class FlutterTtsPlugin : MethodCallHandler, FlutterPlugin {
             "setSilence" -> {
                 val silencems: String = call.arguments.toString()
                 this.silencems = silencems.toInt()
+                result.success(1)
             }
 
             "setSharedInstance" -> result.success(1)
