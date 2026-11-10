@@ -681,4 +681,18 @@ class FlutterTts {
   Future<void> setAudioAttributesForNavigation() async {
     await _channel.invokeMethod('setAudioAttributesForNavigation');
   }
+
+  /// [Future] which invokes the platform specific method for setAudioAttributes
+  /// ***Android supported only***
+  ///
+  /// Sets the engine's audio attributes to any [usage] and [contentType]
+  /// (`android.media.AudioAttributes` constants; 1 = USAGE_MEDIA,
+  /// 2 = USAGE_VOICE_COMMUNICATION; content 1 = CONTENT_TYPE_SPEECH).
+  /// A later setEngine re-creates the engine with default attributes.
+  Future<void> setAudioAttributes({required int usage, int contentType = 1}) async {
+    await _channel.invokeMethod('setAudioAttributes', <String, dynamic>{
+      'usage': usage,
+      'contentType': contentType,
+    });
+  }
 }

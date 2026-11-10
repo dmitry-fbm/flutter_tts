@@ -457,6 +457,13 @@ class FlutterTtsPlugin : MethodCallHandler, FlutterPlugin {
                 result.success(1)
             }
 
+            "setAudioAttributes" -> {
+                val usage: Int = call.argument("usage")!!
+                val contentType: Int = call.argument("contentType")!!
+                setAudioAttributes(usage, contentType)
+                result.success(1)
+            }
+
             else -> result.notImplemented()
         }
     }
@@ -805,6 +812,19 @@ class FlutterTtsPlugin : MethodCallHandler, FlutterPlugin {
             val audioAttributes = AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE)
                 .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                .build()
+            tts!!.setAudioAttributes(audioAttributes)
+        }
+    }
+
+    // Any usage/content type, e.g. USAGE_VOICE_COMMUNICATION so the app can
+    // route speech through the communication device it selects (the car's
+    // hands-free link or the loudspeaker) instead of the media route.
+    private fun setAudioAttributes(usage: Int, contentType: Int) {
+        if (tts != null) {
+            val audioAttributes = AudioAttributes.Builder()
+                .setUsage(usage)
+                .setContentType(contentType)
                 .build()
             tts!!.setAudioAttributes(audioAttributes)
         }
